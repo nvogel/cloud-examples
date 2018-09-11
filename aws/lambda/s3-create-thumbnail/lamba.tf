@@ -90,7 +90,7 @@ resource "aws_lambda_function" "test_lambda" {
 }
 
 # grant Amazon S3 service principal (s3.amazonaws.com) permissions to perform the lambda:InvokeFunction action
-# What service can invoke the lamda 
+# What service can invoke the lamda
 resource "aws_lambda_permission" "allow_nvgl_source" {
   statement_id  = "AllowExecutionFromS3NvglSource"
   action        = "lambda:InvokeFunction"
