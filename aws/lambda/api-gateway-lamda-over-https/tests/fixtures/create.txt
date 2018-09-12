@@ -1,0 +1,9 @@
+{
+    "operation": "create",
+    "tableName": "LambdaFunctionOverHttps",
+    "payload": {
+    "Item": {
+      "id": "testcreate"
+        }
+    }
+}
