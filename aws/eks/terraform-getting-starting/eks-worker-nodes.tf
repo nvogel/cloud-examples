@@ -106,7 +106,7 @@ resource "aws_security_group_rule" "demo-node-ingress-workstation-ssh" {
 data "aws_ami" "eks-worker" {
   filter {
     name   = "name"
-    values = ["eks-worker-*"]
+    values = ["amazon-eks-node-*"]
   }
 
   most_recent = true
@@ -130,9 +130,7 @@ USERDATA
 resource "aws_launch_configuration" "demo" {
   associate_public_ip_address = true
   iam_instance_profile        = "${aws_iam_instance_profile.demo-node.name}"
-  # image_id                    = "${data.aws_ami.eks-worker.id}"
-  # From https://docs.aws.amazon.com/eks/latest/userguide/getting-started.html
-  image_id                    = "ami-08cab282f9979fc7a"
+  image_id                    = "${data.aws_ami.eks-worker.id}"
   instance_type               = "m4.large"
   name_prefix                 = "terraform-eks-demo"
   security_groups             = ["${aws_security_group.demo-node.id}"]
