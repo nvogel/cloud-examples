@@ -46,6 +46,14 @@ resource "aws_iam_role_policy_attachment" "demo-node-AmazonEC2ContainerRegistryR
   role       = "${aws_iam_role.demo-node.name}"
 }
 
+# Needed I you have never created a load balancer before
+# https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/elb-service-linked-roles.html#create-service-linked-role
+# Or run :
+# aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
+resource "aws_iam_service_linked_role" "elasticloadbalancing" {
+    aws_service_name = "elasticloadbalancing.amazonaws.com"
+}
+
 # An instance profile is a container for an IAM role that you can use to pass role information to an EC2 instance when the instance starts.
 # Who is the instance
 resource "aws_iam_instance_profile" "demo-node" {
@@ -127,6 +135,11 @@ USERDATA
 }
 
 
+resource "aws_key_pair" "deployer" {
+    key_name   = "eks_demo"
+    public_key = "${file("~/.ssh/id_rsa.pub")}"
+}
+
 resource "aws_launch_configuration" "demo" {
   associate_public_ip_address = true
   iam_instance_profile        = "${aws_iam_instance_profile.demo-node.name}"
@@ -135,7 +148,7 @@ resource "aws_launch_configuration" "demo" {
   name_prefix                 = "terraform-eks-demo"
   security_groups             = ["${aws_security_group.demo-node.id}"]
   user_data_base64            = "${base64encode(local.demo-node-userdata)}"
-  key_name                    = "${var.keypair}"
+  key_name                    = "eks_demo"
 
   lifecycle {
     create_before_destroy = true
