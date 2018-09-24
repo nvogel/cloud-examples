@@ -5,3 +5,7 @@ This is an implementation of the Aws tutorial with terraform : https://docs.aws.
 This will use **us-west-2** region
 
 Run **make** to list the available targets
+
+# Architecture
+
+![](files/LambdaFunctionOverHttps.png)
