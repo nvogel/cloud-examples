@@ -19,35 +19,9 @@ resource "aws_iam_role" "iam_for_lambda" {
 EOF
 }
 
-# Give access to s3 in a policy
-data "aws_iam_policy_document" "s3-access" {
-    statement {
-        actions = [
-            "s3:GetObject",
-            "s3:PutObject",
-            "s3:ListBucket",
-        ]
-        resources = [
-            "arn:aws:s3:::*",
-        ]
-    }
-}
-
-resource "aws_iam_policy" "s3-access" {
-    name = "s3-access"
-    path = "/"
-    policy = "${data.aws_iam_policy_document.s3-access.json}"
-}
-
-# Associate the policy to the role
-resource "aws_iam_role_policy_attachment" "s3-access" {
-    role       = "${aws_iam_role.iam_for_lambda.name}"
-    policy_arn = "${aws_iam_policy.s3-access.arn}"
-}
-
-# Enable logs
-resource "aws_iam_policy" "lambda_logging" {
-  name = "lambda_logging"
+# Enable logs and r/w on specifics buckets
+resource "aws_iam_policy" "lambda_policy" {
+  name = "lambda_policy_create_thumbnail"
   path = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -63,17 +37,28 @@ resource "aws_iam_policy" "lambda_logging" {
       ],
       "Resource": "arn:aws:logs:*:*:*",
       "Effect": "Allow"
+    },
+    {
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::nvglsource/*",
+        "arn:aws:s3:::nvglsourceresized/*"
+      ],
+      "Effect": "Allow"
     }
   ]
 }
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_logs" {
+resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
   role = "${aws_iam_role.iam_for_lambda.name}"
-  policy_arn = "${aws_iam_policy.lambda_logging.arn}"
+  policy_arn = "${aws_iam_policy.lambda_policy.arn}"
 }
-
 
 # Create the function
 # https://www.terraform.io/docs/providers/aws/r/lambda_function.html
@@ -98,7 +83,6 @@ resource "aws_lambda_permission" "allow_nvgl_source" {
   principal     = "s3.amazonaws.com"
   source_arn    = "${aws_s3_bucket.nvglsource.arn}"
 }
-
 
 # Bucket notification
 resource "aws_s3_bucket_notification" "bucket_notification" {

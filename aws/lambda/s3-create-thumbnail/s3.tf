@@ -19,7 +19,6 @@ resource "aws_s3_bucket" "nvglsourceresized" {
   }
 }
 
-
 resource "aws_s3_bucket_object" "happyface" {
   key                    = "HappyFace.jpg"
   bucket                 = "${aws_s3_bucket.nvglsource.id}"
