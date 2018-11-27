@@ -8,6 +8,12 @@ export AWS_PROFILE=lab
 export AWS_SDK_LOAD_CONFIG=1
 ```
 
+# Usage
+
+```
+make help
+```
+
 # Architecture
 
 ![](files/archi.png)
