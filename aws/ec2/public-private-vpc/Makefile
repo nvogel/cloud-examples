@@ -11,4 +11,13 @@ apply: ## terraform apply auto approve short cut
 destroy: ## destroy all terraform ressources and kube config
 	terraform destroy
 
+cf-create: ## create a stack with cloud formation
+	aws cloudformation create-stack --stack-name lab1 --template-body file:///$(CURDIR)/cloud-formation.yaml
+
+cf-update: ## update cloud formation stack
+	aws cloudformation update-stack --stack-name lab1 --template-body file:///$(CURDIR)/cloud-formation.yaml
+
+cf-delete: ## delete cloud formation stack
+	aws cloudformation delete-stack --stack-name lab1
+
 .PHONY: help create apply destroy

@@ -1,14 +1,7 @@
 
-# How to use a different profile
-
-https://github.com/terraform-providers/terraform-provider-aws/issues/233
-
-```
-export AWS_PROFILE=lab
-export AWS_SDK_LOAD_CONFIG=1
-```
-
 # Usage
+
+Note you can choose to use terraform or cloudformation
 
 ```
 make help
@@ -17,3 +10,13 @@ make help
 # Architecture
 
 ![](files/archi.png)
+
+# How to choose a profile with terraform and aws-google-auth
+
+https://github.com/terraform-providers/terraform-provider-aws/issues/233
+
+```
+export AWS_PROFILE=lab
+export AWS_SDK_LOAD_CONFIG=1
+```
+
