@@ -2,10 +2,11 @@
 resource "aws_s3_bucket" "website" {
   bucket        = "nvglwebsite"
   force_destroy = true
-  acl           = "public-read"
+  acl           = "private"
 
   website {
         index_document = "index.html"
+        error_document = "error.html"
   }
 
   policy = <<EOF
@@ -27,9 +28,16 @@ EOF
   }
 }
 
-resource "aws_s3_bucket_object" "website" {
+resource "aws_s3_bucket_object" "index" {
   key          = "index.html"
   bucket       = "${aws_s3_bucket.website.id}"
   source       = "files/index.html"
+  content_type = "text/html"
+}
+
+resource "aws_s3_bucket_object" "error" {
+  key          = "error.html"
+  bucket       = "${aws_s3_bucket.website.id}"
+  source       = "files/error.html"
   content_type = "text/html"
 }

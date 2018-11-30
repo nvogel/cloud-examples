@@ -11,4 +11,7 @@ apply: ## terraform apply auto approve short cut
 destroy: ## destroy all terraform ressources and kube config
 	terraform destroy
 
+test: ## test
+	./test.sh
+
 .PHONY: help create apply destroy
