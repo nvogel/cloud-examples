@@ -1,7 +1,7 @@
 
 # Usage
 
-Note you can choose to use terraform or cloudformation
+Note you can choose to use terraform
 
 ```
 make help
