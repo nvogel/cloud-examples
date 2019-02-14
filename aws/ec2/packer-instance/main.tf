@@ -35,13 +35,6 @@ resource "aws_security_group" "ssh" {
     cidr_blocks = ["${local.workstation-external-cidr}"]
   }
 
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["${local.workstation-external-cidr}"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
