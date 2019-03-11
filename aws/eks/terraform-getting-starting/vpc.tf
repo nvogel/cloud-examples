@@ -12,10 +12,13 @@
 resource "aws_vpc" "demo" {
   cidr_block = "10.0.0.0/16"
 
+  enable_dns_support = true
+  enable_dns_hostnames = true
+
   tags = "${
     map(
-     "Name", "terraform-eks-demo-node",
-     "kubernetes.io/cluster/${var.cluster-name}", "shared",
+      "Name", "terraform-eks-demo-node",
+      "kubernetes.io/cluster/${var.cluster-name}", "shared",
     )
   }"
 }
@@ -29,8 +32,8 @@ resource "aws_subnet" "demo" {
 
   tags = "${
     map(
-     "Name", "terraform-eks-demo-node",
-     "kubernetes.io/cluster/${var.cluster-name}", "shared",
+      "Name", "terraform-eks-demo-node",
+      "kubernetes.io/cluster/${var.cluster-name}", "shared",
     )
   }"
 }
@@ -38,7 +41,7 @@ resource "aws_subnet" "demo" {
 resource "aws_internet_gateway" "demo" {
   vpc_id = "${aws_vpc.demo.id}"
 
-  tags {
+  tags = {
     Name = "terraform-eks-demo"
   }
 }

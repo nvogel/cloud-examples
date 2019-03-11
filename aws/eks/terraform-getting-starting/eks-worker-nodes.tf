@@ -26,6 +26,37 @@ resource "aws_iam_role" "demo-node" {
 POLICY
 }
 
+resource "aws_iam_policy" "auto_scaler" {
+  name        = "auto_scaler_policy"
+  path        = "/"
+  description = "auto scaler policy"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeTags",
+                "autoscaling:SetDesiredCapacity",
+                "autoscaling:TerminateInstanceInAutoScalingGroup"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_policy_attachment" "this" {
+  name       = "cluster auto scaler policy"
+  roles      = ["${aws_iam_role.demo-node.name}"]
+  policy_arn = "${aws_iam_policy.auto_scaler.arn}"
+}
+
 # his policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.
 resource "aws_iam_role_policy_attachment" "demo-node-AmazonEKSWorkerNodePolicy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
@@ -114,7 +145,7 @@ resource "aws_security_group_rule" "demo-node-ingress-workstation-ssh" {
 data "aws_ami" "eks-worker" {
   filter {
     name   = "name"
-    values = ["amazon-eks-node-*"]
+    values = ["amazon-eks-node-${aws_eks_cluster.demo.version}-v*"]
   }
 
   most_recent = true
@@ -130,7 +161,7 @@ locals {
   demo-node-userdata = <<USERDATA
 #!/bin/bash
 set -o xtrace
-/etc/eks/bootstrap.sh --b64-cluster-ca '${aws_eks_cluster.demo.certificate_authority.0.data}' --apiserver-endpoint '${aws_eks_cluster.demo.endpoint}' '${var.cluster-name}'
+/etc/eks/bootstrap.sh --apiserver-endpoint '${aws_eks_cluster.demo.endpoint}' --b64-cluster-ca '${aws_eks_cluster.demo.certificate_authority.0.data}' '${var.cluster-name}'
 USERDATA
 }
 
@@ -158,8 +189,8 @@ resource "aws_launch_configuration" "demo" {
 resource "aws_autoscaling_group" "demo" {
   desired_capacity     = 2
   launch_configuration = "${aws_launch_configuration.demo.id}"
-  max_size             = 2
   min_size             = 1
+  max_size             = 5
   name                 = "terraform-eks-demo"
   vpc_zone_identifier  = ["${aws_subnet.demo.*.id}"]
 
@@ -169,9 +200,22 @@ resource "aws_autoscaling_group" "demo" {
     propagate_at_launch = true
   }
 
+  lifecycle {
+    ignore_changes = [ "desired_capacity" ]
+  }
+
   tag {
     key                 = "kubernetes.io/cluster/${var.cluster-name}"
     value               = "owned"
     propagate_at_launch = true
   }
+
+  // Auto scaler tags
+  // This will be used by the auto scaler plugin to auto-discover the worker AG
+  tag {
+    key                 = "k8s.io/cluster-autoscaler/enabled"
+    value               = "owned"
+    propagate_at_launch = true
+  }
+
 }
