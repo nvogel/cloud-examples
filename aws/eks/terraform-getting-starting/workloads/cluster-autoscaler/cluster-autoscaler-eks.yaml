@@ -121,8 +121,16 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        - image: k8s.gcr.io/cluster-autoscaler:v1.3.6
+        - image: k8s.gcr.io/cluster-autoscaler:v1.3.8
           name: cluster-autoscaler
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: 8085
+          readinessProbe:
+            httpGet:
+              path: /health-check
+              port: 8085
           resources:
             limits:
               cpu: 100m
@@ -138,8 +146,7 @@ spec:
             - --v=4
             - --stderrthreshold=info
             - --cloud-provider=aws
-            - --skip-nodes-with-local-storage=false
-            - --expander=least-waste
+            - --expander=random
             - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,kubernetes.io/cluster/terraform-eks-demo
           volumeMounts:
             - name: ssl-certs
