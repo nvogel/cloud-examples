@@ -30,12 +30,12 @@ resource "aws_security_group" "admin" {
 }
 
 resource "aws_instance" "admin" {
-  ami                         = "${data.aws_ami.amazon-linux-2.id}"
-  instance_type               = "t2.micro"
-  vpc_security_group_ids      = ["${aws_security_group.admin.id}"]
-  subnet_id                   = "${module.private_subnets.az_subnet_ids["eu-west-3a"]}"
-  key_name                    = "${module.ssh_key_pair.key_name}"
-  tags                        = "${module.admin_label.tags}"
+  ami                    = "${data.aws_ami.amazon-linux-2.id}"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = ["${aws_security_group.admin.id}"]
+  subnet_id              = "${module.private_subnets.az_subnet_ids["eu-west-3a"]}"
+  key_name               = "${module.ssh_key_pair.key_name}"
+  tags                   = "${module.admin_label.tags}"
 }
 
 resource "aws_route53_record" "admin-dns" {

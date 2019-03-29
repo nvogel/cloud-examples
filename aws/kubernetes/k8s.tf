@@ -37,21 +37,20 @@ resource "aws_security_group" "nodes-kubernetes-security-group" {
   }
 
   ingress {
-    description              = "Allow all node to node"
-    from_port                = 0
-    to_port                  = 0
-    protocol                 = "-1"
-    self                     = true
+    description = "Allow all node to node"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
   }
 
   ingress {
-    description              = "Allow master to nodes"
-    from_port                = 0
-    to_port                  = 0
-    protocol                 = "-1"
-    security_groups          = ["${aws_security_group.masters-kubernetes-security-group.id}"]
+    description     = "Allow master to nodes"
+    from_port       = 0
+    to_port         = 0
+    protocol        = "-1"
+    security_groups = ["${aws_security_group.masters-kubernetes-security-group.id}"]
   }
-
 }
 
 resource "aws_security_group" "masters-kubernetes-security-group" {
@@ -69,21 +68,20 @@ resource "aws_security_group" "masters-kubernetes-security-group" {
   }
 
   ingress {
-    description              = "Allow all master to master"
-    from_port                = 0
-    to_port                  = 0
-    protocol                 = "-1"
-    self                     = true
+    description = "Allow all master to master"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    self        = true
   }
 
   ingress {
-    description              = "Allow api elb to master"
-    from_port                = 443
-    to_port                  = 443
-    protocol                 = "tcp"
-    security_groups          = ["${aws_security_group.api-elb-kubernetes-security-group.id}"]
+    description     = "Allow api elb to master"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = ["${aws_security_group.api-elb-kubernetes-security-group.id}"]
   }
-
 }
 
 /*============ Create elb for kubernetes api  ==============*/
@@ -108,7 +106,6 @@ resource "aws_security_group" "api-elb-kubernetes-security-group" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
 
 resource "aws_elb" "k8s-api" {
   name = "${module.api_elb_label.id}"
@@ -135,5 +132,4 @@ resource "aws_elb" "k8s-api" {
   idle_timeout = 300
 
   tags = "${module.api_elb_label.tags}"
-
 }

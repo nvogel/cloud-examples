@@ -1,5 +1,5 @@
 locals {
-    ssh_config = <<SSHCONFIG
+  ssh_config = <<SSHCONFIG
 Host bastion
     HostName ${aws_instance.bastion.public_ip}
     User ec2-user
