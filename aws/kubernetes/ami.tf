@@ -40,4 +40,9 @@ data "aws_ami" "amazon-linux-2" {
     name   = "root-device-type"
     values = ["ebs"]
   }
+
+  filter {
+    name = "image-id"
+    values = ["ami-0451ae4fd8dd178f7"]
+  }
 }

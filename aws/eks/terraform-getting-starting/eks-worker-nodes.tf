@@ -81,9 +81,11 @@ resource "aws_iam_role_policy_attachment" "demo-node-AmazonEC2ContainerRegistryR
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/elb-service-linked-roles.html#create-service-linked-role
 # Or run :
 # aws iam create-service-linked-role --aws-service-name "elasticloadbalancing.amazonaws.com"
-resource "aws_iam_service_linked_role" "elasticloadbalancing" {
-    aws_service_name = "elasticloadbalancing.amazonaws.com"
-}
+
+# TODO not usefull anymore 
+#resource "aws_iam_service_linked_role" "elasticloadbalancing" {
+#    aws_service_name = "elasticloadbalancing.amazonaws.com"
+#}
 
 # An instance profile is a container for an IAM role that you can use to pass role information to an EC2 instance when the instance starts.
 # Who is the instance

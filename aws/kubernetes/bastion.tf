@@ -29,6 +29,15 @@ resource "aws_security_group" "bastion" {
   tags = "${module.bastion_label.tags}"
 }
 
+data "template_file" "cloud-init-base" {
+    template =  "${file("${path.module}/data/base_install.tpl")}"
+
+    vars {
+        name = "bastion"
+        role = "bastion"
+    }
+}
+
 resource "aws_instance" "bastion" {
   ami                         = "${data.aws_ami.amazon-linux-2.id}"
   instance_type               = "t2.micro"
@@ -37,6 +46,7 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
   key_name                    = "${module.ssh_key_pair.key_name}"
   tags                        = "${module.bastion_label.tags}"
+  user_data                   = "${data.template_file.cloud-init-base.rendered}"
 }
 
 resource "aws_route53_record" "bastion-dns" {

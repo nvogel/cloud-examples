@@ -19,6 +19,16 @@ module "vpc" {
   enable_dns_support   = true
 }
 
+resource "aws_vpc_dhcp_options_association" "this" {
+  vpc_id          = "${module.vpc.vpc_id}"
+  dhcp_options_id = "${aws_vpc_dhcp_options.this.id}"
+}
+
+resource "aws_vpc_dhcp_options" "this" {
+  domain_name     = "${var.private_zone}"
+  domain_name_servers = ["AmazonProvidedDNS"]
+}
+
 #split in 2 the vpc cidr bloc
 # > cidrsubnet("10.228.160.0/21", 1, 0)
 #    10.228.160.0/22
@@ -29,8 +39,7 @@ locals {
   private_cidr_block = "${cidrsubnet(module.vpc.vpc_cidr_block, 1, 1)}"
 }
 
-# Split the public_cidr_block in 8 subnets (/25)
-# For each az, create a public subnet and a ngw
+# For each az, create a public subnet (/25) and a ngw
 module "public_subnets" {
   source              = "git::https://github.com/cloudposse/terraform-aws-multi-az-subnets.git?ref=0.2.2"
   namespace           = "${var.namespace}"
@@ -44,8 +53,7 @@ module "public_subnets" {
   nat_gateway_enabled = "true"
 }
 
-# Split the private_cidr_block in 8 subnets (/25)
-# For each az, create a private subnet and a default route the ngw
+# For each az, create a private subnet (/25) and a default route the ngw
 module "private_subnets" {
   source             = "git::https://github.com/cloudposse/terraform-aws-multi-az-subnets.git?ref=0.2.2"
   namespace          = "${var.namespace}"

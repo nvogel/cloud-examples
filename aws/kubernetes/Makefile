@@ -8,8 +8,17 @@ apply: ## terraform apply
 	terraform apply
 
 .PHONY: nuke
-nuke: ## destroy all things created
+nuke: destroy clean ## destroy all things created
+	echo "Nuke done"
+
+.PHONY: destroy
+destroy: ## destroy all things created
 	terraform destroy
+
+.PHONY: clean
+clean: ## cleqn all things created
+	rm -f terraform.tfstate.backup
+	rm -f terraform.tfstate
 	rm -f ./var
 
 .PHONY: fmt
