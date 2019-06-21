@@ -33,7 +33,7 @@ data "template_file" "cloud-init-admin" {
 
 resource "aws_instance" "admin" {
   ami                    = "${data.aws_ami.amazon-linux-2.id}"
-  instance_type          = "t2.micro"
+  instance_type          = "t2.medium"
   vpc_security_group_ids = ["${aws_security_group.admin.id}",
                             "${aws_security_group.k8s.id}"
                             ]
