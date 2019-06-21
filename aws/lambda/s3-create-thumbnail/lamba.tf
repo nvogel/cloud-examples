@@ -20,6 +20,14 @@ EOF
 }
 
 # Enable logs and r/w on specifics buckets
+# 
+# https://aws.amazon.com/premiumsupport/knowledge-center/lambda-execution-role-s3-bucket/
+# Important: If the IAM role that you create for the Lambda function is in the same AWS account as the bucket, then you don't need to grant Amazon S3 permissions on both the IAM role and the bucket policy.
+# Instead, you can grant the permissions on the IAM role and then verify that the bucket policy doesn't explicitly deny access to the Lambda function role.
+# As an example, the following procedure grants Amazon S3 permissions on the IAM role.
+# If the IAM role and the bucket are in different accounts, then you need to grant Amazon S3 permissions on both the IAM role and the bucket policy.
+
+
 resource "aws_iam_policy" "lambda_policy" {
   name = "lambda_policy_create_thumbnail"
   path = "/"
